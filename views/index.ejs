@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Palabras</title>
+    <style>
+        *,
+        *::after,
+        *::before {
+            box-sizing: border-box;
+
+
+        }
+
+        body {
+            font-size: 62.5%;
+            display: flex;
+            flex-direction: column;
+            border: 0.2em solid tomato inherit;
+            width: 40%;
+            margin: 70px auto 0 auto;
+            padding-bottom: 50px;
+            background-color: black;
+
+        }
+
+        .container {
+            background-color: antiquewhite;
+
+        }
+
+        .textOk {
+            width: auto;
+        }
+
+        header {
+            font-size: 2em;
+            width: 100%;
+            height: auto;
+            margin-bottom: 40px;
+        }
+
+        main {
+            font-size: 2em;
+            width: 100%;
+
+            input,
+            label {
+                display: flex;
+                flex-direction: column;
+                width: 80%;
+                height: 40px;
+                font-size: 1.3em;
+                margin-left: auto;
+            }
+
+            button {
+                margin: 20px 0 20px 150px;
+                padding: 7px;
+                width: 200px;
+                font-size: 1.4em;
+                font-weight: bold;
+                cursor: pointer;
+                letter-spacing: 5px;
+                border: 0;
+                background: tomato;
+                border-radius: 8px;
+
+                &:hover {
+                    box-shadow:
+                        4px 4px black, inset -4px -4px gray;
+
+                }
+            }
+        }
+
+        h2 {
+            margin-bottom: 100px;
+            width: 80%;
+            margin: 20px auto;
+            line-height: 1.5;
+        }
+
+        h1 {
+            margin: 0 auto 100px auto;
+            border: 0.1em solid blue;
+            text-align: center;
+            padding: 10px;
+            width: 60%;
+
+        }
+
+        .but_url {
+            display: grid;
+            place-content: center;
+            grid-template-columns: repeat(5, 1fr);
+            margin: 0 auto;
+        }
+
+        .but_label {
+            grid-column: 1/5;
+        }
+
+        .parrafo_url {
+            font-size: 0.6em;
+            grid-column: 5/6;
+            text-align: center;
+
+            h3 {
+                margin-bottom: 10px;
+            }
+
+
+            h4 {
+                width: 70%;
+                margin: 0 auto;
+            }
+
+            p {
+
+                margin-right: auto;
+                font-size: 0.8em;
+                font-weight: bold;
+                padding: 0 10px;
+            }
+
+        }
+
+        @media (max-width:1274px) {
+
+            .but_url {
+                display: flex;
+                flex-direction: column;
+            }
+
+            h1,
+            h2,
+            h3 {
+                font-size: 1em;
+
+            }
+
+            input,
+            label {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                padding: 30px;
+                text-align: center;
+                margin: 0 auto;
+            }
+
+            main {
+
+                button {
+
+                    margin: 30px auto;
+                }
+            }
+
+
+        }
+    </style>
+    <script type="module">
+        // Los siguientes valores se evalúan como false (también conocidos como valores Falsy:
+
+        //     false
+        //     undefined
+        //     null
+        //     0
+        //     NaN
+        //     la cadena vacía ("")
+
+        // Todos los demás valores, incluidos todos los objetos, se evalúan como true cuando se pasan a una declaración condicional.
+
+        const inputText = document.getElementById('inputText')
+        const textOk = document.getElementById('textOk')
+        const button = document.querySelector('button')
+
+        inputText.addEventListener('change', (e) => {
+            e.preventDefault()
+            const value = e.target.value
+
+            fetch('/palabra', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ value })
+            }).then(async res => {
+                if (res.status === 200) {
+                    const result = await res.json()
+                    if (value.toLowerCase() === result) textOk.innerHTML = '<h1 style="color: red;">BIEN</h1>'
+                }
+                if (res.status === 404) {
+                    textOk.innerHTML = '<h1 style="color: gray;">MAL</h1>'
+                }
+            })
+
+        })
+
+        button.addEventListener('click', (e) => {
+            e.preventDefault()
+            location.reload()
+        })
+    </script>
+
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h2>
+                <center>Palabra con <span>"<%=letter1%>"</span> y luego con <span>"<%=letter2%>"</span><br>
+                    Visualiza la palabra y luego escríbela sin mirarla
+                </center>
+            </h2>
+        </header>
+        <main>
+            <h1>
+                <%= palabra %>
+            </h1>
+            <div id="textOk"></div>
+            <div class="but_url">
+                <div class="but_label">
+                    <label for="word">Escribir el texto aqui y luego F5 o reset:</label><input id="inputText"
+                        type="text" name="word" autocomplete="off" autofocus>
+                    <center><button id="refresh">RESET</button></center>
+                </div>
+                <div class="parrafo_url">
+                    <h3>Indicaciones:</h3>
+                    <h4>En la URL despues de "palabra" indicar las letras a seleccionar y Enter:</h4>
+                    <p>http://.../palabra/Letra"A"/Letra"B"</p>
+                </div>
+            </div>
+
+        </main>
+    </div>
+</body>
+
+</html>
